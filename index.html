@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FurryCloud - 企业上云解决方案服务平台</title>
+  <link rel="icon" type="image/png" href="https://cloud.furll.cn/upload/ys-logo-f.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="//cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js" defer></script>
+  <style>
+    /* 页面加载动画 */
+    #page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #page-loader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* 加载时禁用滚动但显示滚动条 */
+    body.loading {
+      overflow-y: scroll;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 加载动画容器 */
+    .loader-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    /* 外圈 - 旋转的虚线圆环 */
+    .loader-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 2px solid transparent;
+      border-top-color: #171717;
+      border-right-color: #171717;
+      border-radius: 50%;
+      animation: loader-rotate 1.5s linear infinite;
+    }
+
+    .loader-ring:nth-child(2) {
+      width: 80%;
+      height: 80%;
+      top: 10%;
+      left: 10%;
+      border-top-color: #525252;
+      border-right-color: transparent;
+      border-bottom-color: #525252;
+      animation: loader-rotate 1.2s linear infinite reverse;
+    }
+
+    .loader-ring:nth-child(3) {
+      width: 60%;
+      height: 60%;
+      top: 20%;
+      left: 20%;
+      border-top-color: transparent;
+      border-right-color: #a3a3a3;
+      border-bottom-color: transparent;
+      border-left-color: #a3a3a3;
+      animation: loader-rotate 0.8s linear infinite;
+    }
+
+    @keyframes loader-rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 中心脉冲点 */
+    .loader-pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      background: #171717;
+      border-radius: 50%;
+      animation: loader-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loader-pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(0.6);
+        opacity: 0.5;
+      }
+    }
+
+    /* 加载文字 */
+    .loader-text {
+      margin-top: 32px;
+      font-size: 13px;
+      color: #737373;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: loader-text-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loader-text-pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* 进度条 */
+    .loader-progress {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 1px;
+      background: #e5e5e5;
+      overflow: hidden;
+    }
+
+    .loader-progress-bar {
+      height: 100%;
+      background: #171717;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* 加载百分比文字 */
+    .loader-percentage {
+      position: absolute;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #737373;
+      letter-spacing: 0.1em;
+    }
+
+    /* 扫描线动画 */
+    @keyframes scan {
+      0% { top: 0; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    
+    .scan-line {
+      animation: scan 2.5s ease-in-out infinite;
+    }
+    
+    /* 淡入动画 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-fade-in-up {
+      animation: fadeInUp 0.7s ease-out forwards;
+    }
+    
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+    
+    /* 卡片阴影 - 极简风格 */
+    .demo-card {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04),
+                  0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* 背景网格线 - 更淡 */
+    .grid-background {
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    
+    /* 数字滚动动画 */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .stat-number {
+      animation: countUp 0.8s ease-out forwards;
+    }
+    
+    /* 特性卡片悬停 - 无圆角无阴影 */
+    .feature-card {
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .feature-card:hover {
+      border-color: #e5e7eb;
+      background-color: #fafafa;
+    }
+    
+    /* 解决方案卡片 */
+    .solution-card {
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+    .solution-card:hover {
+      border-left-color: #171717;
+      background-color: #fafafa;
+    }
+    
+    /* 代码块样式 */
+    .code-block {
+      background: #0a0a0a;
+    }
+    
+    /* 自定义滚动条 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f5f5f5;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #d4d4d4;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a3a3a3;
+    }
+    
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #d4d4d4 #f5f5f5;
+    }
+
+    /* 服务支持卡片 */
+    .service-card {
+      transition: all 0.2s ease;
+    }
+    .service-card:hover {
+      background-color: #fafafa;
+    }
+
+    /* 标签样式 */
+    .tag {
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    /* 数据指标区模糊效果 */
+    .stats-blur-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .blur-circle {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+    }
+
+    .blur-circle-1 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0,0,0,0.08) 0%, transparent 70%);
+      top: -100px;
+      left: 10%;
+    }
+
+    .blur-circle-2 {
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(0,0,0,0.06) 0%, transparent 70%);
+      bottom: -80px;
+      right: 15%;
+    }
+
+    .blur-circle-3 {
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(0,0,0,0.05) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .stat-item {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="bg-white min-h-screen loading">
+
+  <!-- 页面加载动画 -->
+  <div id="page-loader">
+    <div class="loader-container">
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-pulse"></div>
+    </div>
+    <div class="loader-text">Loading</div>
+    <div class="loader-percentage" id="loader-percentage">0%</div>
+    <div class="loader-progress">
+      <div class="loader-progress-bar" id="loader-progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- 背景网格 -->
+  <div class="fixed inset-0 grid-background pointer-events-none z-0"></div>
+
+  <!-- 公告弹窗 -->
+  <div id="announcement-modal" class="fixed inset-0 z-[60] hidden">
+    <div class="absolute inset-0 bg-black/50" onclick="closeAnnouncement()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-lg shadow-xl p-6 animate-fade-in-up">
+      <div class="text-center mb-5">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-3">
+          <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-neutral-900">系统公告</h3>
+      </div>
+      <div class="text-sm text-neutral-600 space-y-3 mb-6">
+        <p>尊敬的用户：</p>
+        <p>本站已迁移至新系统运营，请旧用户在本站重新注册并完成实名认证。</p>
+        <p>如您已有产品，请至工单提交服务器IP以便绑定产品。</p>
+        <p class="text-amber-600 font-medium">建议加入官方QQ群获取更多帮助：<a href="https://qm.qq.com/cgi-bin/qm/qr?k=9eDc6BRGgWBY-MVvMHNeqbbZ0Lm06TLK&jump_from=webapi&authKey=MHaSMvyIX2syGkEPKxtR3poK+0GhivmwDgieEWEiT5bBIRI+yLpRtoz2WzJvWQVA" target="_blank" class="underline hover:text-amber-700">点击加入QQ群</a></p>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="closeAnnouncement()" class="flex-1 px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded hover:bg-neutral-800 transition-colors">
+          我知道了
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航栏 -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14">
+        <!-- Logo -->
+        <div class="flex items-center gap-4 sm:gap-6">
+          <a href="index.html">
+            <img src="https://cloud.furll.cn/upload/logo_160x50.png" alt="FurryCloud" class="h-7 w-auto">
+          </a>
+          <a href="ddos-protection.html" class="hidden sm:block text-sm text-neutral-600 hover:text-neutral-900 transition-colors">DDoS高防</a>
+        </div>
+
+        <!-- 右侧操作 -->
+        <div class="flex items-center gap-3">
+          <a href="/login.htm" class="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">登录</a>
+          <a href="/regist.htm" class="px-3 py-1.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
+            立即注册
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- 主内容区 -->
+  <main class="relative z-10">
+    
+    <!-- 首屏容器：Hero + 数据指标 -->
+    <div class="min-h-screen flex flex-col">
+      
+      <!-- Hero Section -->
+      <section class="flex-1 flex items-center justify-center pt-14 pb-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto text-center">
+          
+          <!-- 标签 -->
+          <div class="animate-fade-in-up opacity-0">
+            <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium text-neutral-600 uppercase bg-neutral-100 tracking-wider">
+              <span class="w-1 h-1 bg-green-500"></span>
+              已服务 2000+ 企业客户
+            </span>
+          </div>
+          
+          <!-- 主标题 -->
+          <h1 class="mt-6 text-3xl sm:text-4xl lg:text-5xl font-semibold text-neutral-900 tracking-tight leading-tight animate-fade-in-up opacity-0 delay-100">
+            企业一站式产品与服务
+          </h1>
+          
+          <!-- 副标题 -->
+          <p class="mt-4 text-base text-neutral-500 max-w-2xl mx-auto leading-relaxed animate-fade-in-up opacity-0 delay-200">
+            携手三大公有云，提供快速、稳定、安全的全方位需求服务，<br class="hidden sm:block">帮助企业获得高效的动能
+          </p>
+          
+          <!-- CTA 按钮组 -->
+          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-in-up opacity-0 delay-300">
+            <a href="/regist.htm" class="group flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
+              立即注册
+              <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </a>
+
+            <a href="/cart/goodsList.htm" class="group flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-700 text-sm font-medium border border-neutral-200 hover:border-neutral-300 transition-all">
+              <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              查看产品
+            </a>
+          </div>
+          
+        </div>
+      </section>
+      
+      <!-- 数据指标区 -->
+      <section class="py-12 px-4 sm:px-6 lg:px-8 border-t border-neutral-100 relative overflow-hidden">
+        <!-- 模糊装饰背景 -->
+        <div class="stats-blur-bg">
+          <div class="blur-circle blur-circle-1"></div>
+          <div class="blur-circle blur-circle-2"></div>
+          <div class="blur-circle blur-circle-3"></div>
+        </div>
+        <div class="max-w-6xl mx-auto relative z-10">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center animate-fade-in-up opacity-0 delay-100 stat-item">
+              <div class="text-2xl sm:text-3xl font-semibold text-neutral-900 stat-number">15+</div>
+              <div class="mt-1.5 text-sm text-neutral-500">全球数据中心</div>
+            </div>
+            <div class="text-center animate-fade-in-up opacity-0 delay-200 stat-item">
+              <div class="text-2xl sm:text-3xl font-semibold text-neutral-900 stat-number">50ms</div>
+              <div class="mt-1.5 text-sm text-neutral-500">平均延迟</div>
+            </div>
+            <div class="text-center animate-fade-in-up opacity-0 delay-300 stat-item">
+              <div class="text-2xl sm:text-3xl font-semibold text-neutral-900 stat-number">99.99%</div>
+              <div class="mt-1.5 text-sm text-neutral-500">服务可用性</div>
+            </div>
+            <div class="text-center animate-fade-in-up opacity-0 delay-400 stat-item">
+              <div class="text-2xl sm:text-3xl font-semibold text-neutral-900 stat-number">24/7</div>
+              <div class="mt-1.5 text-sm text-neutral-500">技术支持</div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+    
+    <!-- 企业上云解决方案服务平台 -->
+    <section id="solutions" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50/50">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="mb-12 animate-fade-in-up opacity-0">
+          <h2 class="text-xl sm:text-2xl font-semibold text-neutral-900">企业上云解决方案服务平台</h2>
+          <p class="mt-2 text-neutral-500 text-sm">全栈解决方案，赋能、创新、转型，提供极致体验的企业上云服务</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 border border-neutral-200">
+          
+          <!-- 游戏生态 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">游戏生态</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">小游戏</li>
+              <li class="text-sm text-neutral-600">跨区部署</li>
+            </ul>
+          </div>
+          
+          <!-- 教育 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">教育</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">在线智能课堂</li>
+              <li class="text-sm text-neutral-600">教育企业扶持</li>
+              <li class="text-sm text-neutral-600">智慧教育全景</li>
+            </ul>
+          </div>
+          
+          <!-- 音视频 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">音视频</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">点播直播</li>
+              <li class="text-sm text-neutral-600">实时视频通话</li>
+              <li class="text-sm text-neutral-600">短视频</li>
+            </ul>
+          </div>
+          
+          <!-- 安全 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">安全</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">合规生态完备</li>
+              <li class="text-sm text-neutral-600">安全防护架构</li>
+              <li class="text-sm text-neutral-600">T-Sec 等保</li>
+            </ul>
+          </div>
+          
+          <!-- 小程序 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">小程序</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">官方生态</li>
+              <li class="text-sm text-neutral-600">原生云端支持</li>
+            </ul>
+          </div>
+          
+          <!-- 专有云 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">专有云</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">三大模式上云</li>
+              <li class="text-sm text-neutral-600">适用场景丰富</li>
+              <li class="text-sm text-neutral-600">私有化全栈云</li>
+            </ul>
+          </div>
+          
+          <!-- 金融 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">金融</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">立体安全机制</li>
+              <li class="text-sm text-neutral-600">云上金融</li>
+            </ul>
+          </div>
+          
+          <!-- 大数据 -->
+          <div class="solution-card bg-white p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 bg-neutral-100 flex items-center justify-center">
+                <svg class="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </div>
+              <h3 class="text-sm font-semibold text-neutral-900">大数据</h3>
+            </div>
+            <ul class="space-y-1.5">
+              <li class="text-sm text-neutral-600">企业画像</li>
+              <li class="text-sm text-neutral-600">智能分析 BI</li>
+              <li class="text-sm text-neutral-600">PB 级数仓</li>
+            </ul>
+          </div>
+          
+        </div>
+        
+        <div class="mt-8 text-center animate-fade-in-up opacity-0 delay-500">
+          <button class="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            查看全部解决方案
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </button>
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- 为什么选择二五云 -->
+    <section id="why-us" class="py-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="mb-12 animate-fade-in-up opacity-0">
+          <h2 class="text-xl sm:text-2xl font-semibold text-neutral-900">为什么选择 FurryCloud</h2>
+          <p class="mt-2 text-neutral-500 text-sm">提供极致体验的企业上云服务，拥有安全有效的解决方案和专业的运维服务，为您云上旅程保驾护航</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-px bg-neutral-200 border border-neutral-200">
+          
+          <!-- 弹性计算 -->
+          <div class="feature-card bg-white p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-neutral-900 mb-2">弹性计算</h3>
+                <p class="text-sm text-neutral-500 leading-relaxed">在 FurryCloud 您可以在几分钟之内快速根据业务需求，可弹性创建与释放云服务器，轻松应对业务的快速变化。</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 多样化配置 -->
+          <div class="feature-card bg-white p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-neutral-900 mb-2">多样化配置</h3>
+                <p class="text-sm text-neutral-500 leading-relaxed">提供多种类型的实例、操作系统和软件包。各实例中的 CPU、内存、硬盘和带宽可以灵活调整。</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 安全的网络 -->
+          <div class="feature-card bg-white p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-neutral-900 mb-2">安全的网络</h3>
+                <p class="text-sm text-neutral-500 leading-relaxed">通过云控制台，切实保证您云上资源的安全性。您还可以完全掌控您的私有网络环境配置等。</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 管理简单 -->
+          <div class="feature-card bg-white p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-neutral-900 mb-2">管理简单</h3>
+                <p class="text-sm text-neutral-500 leading-relaxed">可以使用云控制台、进行重启等重要操作，这样管理实例就像管理操作您的计算机一样简单方便。</p>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- 服务支持 -->
+    <section id="support" class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50/50">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="mb-12 animate-fade-in-up opacity-0">
+          <h2 class="text-xl sm:text-2xl font-semibold text-neutral-900">全天候服务支持</h2>
+          <p class="mt-2 text-neutral-500 text-sm">专业团队为您解决问题，私密信息严格保密，打造一个安全的环境</p>
+        </div>
+        
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- 全天候服务支持 -->
+          <div class="service-card bg-white p-5 border border-neutral-200">
+            <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">全天候服务支持</h3>
+            <p class="text-xs text-neutral-500">7*24小时在线1对1服务</p>
+          </div>
+          
+          <!-- 快速解决问题 -->
+          <div class="service-card bg-white p-5 border border-neutral-200">
+            <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">快速解决问题</h3>
+            <p class="text-xs text-neutral-500">专业团队为您解决问题</p>
+          </div>
+          
+          <!-- 客户隐私安全 -->
+          <div class="service-card bg-white p-5 border border-neutral-200">
+            <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">客户隐私安全</h3>
+            <p class="text-xs text-neutral-500">私密信息严格保密</p>
+          </div>
+          
+          <!-- 全方位安全保障 -->
+          <div class="service-card bg-white p-5 border border-neutral-200">
+            <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">全方位安全保障</h3>
+            <p class="text-xs text-neutral-500">打造一个安全的环境</p>
+          </div>
+          
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- 控制台演示卡片 -->
+    <section id="products" class="py-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto">
+        
+        <div class="mb-10 animate-fade-in-up opacity-0">
+          <h2 class="text-xl sm:text-2xl font-semibold text-neutral-900">直观的控制台体验</h2>
+          <p class="mt-2 text-neutral-500 text-sm">简洁的界面设计，轻松管理你的云资源</p>
+        </div>
+        
+        <div class="animate-fade-in-up opacity-0 delay-200">
+          <!-- 卡片容器 -->
+          <div class="demo-card bg-white border border-neutral-200 overflow-hidden">
+            
+            <!-- 卡片头部 -->
+            <div class="flex items-center justify-between px-4 py-3 border-b border-neutral-100 bg-neutral-50/50">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 bg-neutral-300"></div>
+                <div class="w-2.5 h-2.5 bg-neutral-300"></div>
+                <div class="w-2.5 h-2.5 bg-neutral-300"></div>
+              </div>
+              
+              <div class="flex-1 text-center">
+                <span class="text-xs font-medium text-neutral-600">FurryCloud 控制台</span>
+              </div>
+              
+              <div class="flex items-center gap-1.5 px-2 py-1 bg-green-50">
+                <div class="w-1.5 h-1.5 bg-green-500"></div>
+                <span class="text-xs text-green-700">运行中</span>
+              </div>
+            </div>
+            
+            <!-- 卡片内容区 -->
+            <div class="p-5">
+              <div class="flex flex-col md:flex-row gap-5">
+                
+                <!-- 左侧：资源面板 -->
+                <div class="w-full md:w-40 flex-shrink-0 space-y-3">
+                  <div class="p-3 bg-neutral-50 border border-neutral-100">
+                    <div class="text-xs text-neutral-400 mb-1.5">实例状态</div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-1.5 h-1.5 bg-green-500"></div>
+                      <span class="text-sm text-neutral-700">运行中</span>
+                    </div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <div class="h-1.5 bg-neutral-100 w-full"></div>
+                    <div class="h-1.5 bg-neutral-100 w-4/5"></div>
+                    <div class="h-1.5 bg-neutral-100 w-3/5"></div>
+                  </div>
+                  <div class="p-2 bg-neutral-50 border border-neutral-100">
+                    <div class="text-xs text-neutral-600">CPU 使用率 23%</div>
+                  </div>
+                </div>
+                
+                <!-- 右侧：监控图表区域 -->
+                <div class="flex-1">
+                  <div class="relative h-48 bg-neutral-50 border border-neutral-200 overflow-hidden">
+                    
+                    <!-- 扫描线 -->
+                    <div class="scan-line absolute left-0 right-0 h-px bg-neutral-400 z-10"></div>
+                    
+                    <!-- 中心图标 -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <div class="w-16 h-16 border border-neutral-300 flex items-center justify-center bg-white">
+                        <svg class="w-6 h-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                        </svg>
+                      </div>
+                    </div>
+                    
+                    <!-- 角落标记 -->
+                    <div class="absolute top-3 left-3 w-4 h-4 border-l border-t border-neutral-400"></div>
+                    <div class="absolute top-3 right-3 w-4 h-4 border-r border-t border-neutral-400"></div>
+                    <div class="absolute bottom-3 left-3 w-4 h-4 border-l border-b border-neutral-400"></div>
+                    <div class="absolute bottom-3 right-3 w-4 h-4 border-r border-b border-neutral-400"></div>
+                    
+                    <!-- 底部状态栏 -->
+                    <div class="absolute bottom-0 left-0 right-0 h-7 bg-white/80 flex items-center justify-center border-t border-neutral-100">
+                      <span class="text-xs text-neutral-400">正在同步监控数据...</span>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- 5分钟开始使用 -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-neutral-900">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="text-center mb-12 animate-fade-in-up opacity-0">
+          <h2 class="text-xl sm:text-2xl font-semibold text-white mb-3">5 分钟开始使用</h2>
+          <p class="text-neutral-400 text-sm max-w-2xl mx-auto leading-relaxed">简单四步，从注册到上线，全程自助操作，快速开启您的云服务之旅</p>
+        </div>
+        
+        <!-- 流程步骤 -->
+        <div class="grid md:grid-cols-4 gap-6">
+          
+          <!-- 步骤1：注册/登录 -->
+          <div class="animate-fade-in-up opacity-0 delay-100">
+            <div class="bg-neutral-800/50 border border-neutral-700 p-6 h-full">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 bg-neutral-700 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <span class="text-xs text-neutral-500 font-medium">STEP 01</span>
+              </div>
+              <h3 class="text-white text-sm font-medium mb-2">注册/登录</h3>
+              <p class="text-neutral-400 text-xs leading-relaxed">手机号快速注册，支持微信扫码登录，30秒完成账号创建</p>
+            </div>
+          </div>
+          
+          <!-- 步骤2：选购产品 -->
+          <div class="animate-fade-in-up opacity-0 delay-200">
+            <div class="bg-neutral-800/50 border border-neutral-700 p-6 h-full">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 bg-neutral-700 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                  </svg>
+                </div>
+                <span class="text-xs text-neutral-500 font-medium">STEP 02</span>
+              </div>
+              <h3 class="text-white text-sm font-medium mb-2">选购产品</h3>
+              <p class="text-neutral-400 text-xs leading-relaxed">云服务器、域名、SSL证书等产品，按需选择配置，支持多种支付方式</p>
+            </div>
+          </div>
+          
+          <!-- 步骤3：快速开通 -->
+          <div class="animate-fade-in-up opacity-0 delay-300">
+            <div class="bg-neutral-800/50 border border-neutral-700 p-6 h-full">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 bg-neutral-700 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                </div>
+                <span class="text-xs text-neutral-500 font-medium">STEP 03</span>
+              </div>
+              <h3 class="text-white text-sm font-medium mb-2">快速开通</h3>
+              <p class="text-neutral-400 text-xs leading-relaxed">支付成功后秒级开通，自动部署环境，即时获取服务器登录信息</p>
+            </div>
+          </div>
+          
+          <!-- 步骤4：工单支持 -->
+          <div class="animate-fade-in-up opacity-0 delay-400">
+            <div class="bg-neutral-800/50 border border-neutral-700 p-6 h-full">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 bg-neutral-700 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                  </svg>
+                </div>
+                <span class="text-xs text-neutral-500 font-medium">STEP 04</span>
+              </div>
+              <h3 class="text-white text-sm font-medium mb-2">工单服务</h3>
+              <p class="text-neutral-400 text-xs leading-relaxed">7×24小时技术支持，专业技术团队在线答疑，平均响应时间15分钟</p>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- 底部按钮 -->
+        <div class="text-center mt-10 animate-fade-in-up opacity-0 delay-500">
+          <a href="/regist.htm" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-100 transition-colors">
+            立即免费注册
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- CTA 区域 -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-neutral-50">
+      <div class="max-w-4xl mx-auto text-center animate-fade-in-up opacity-0">
+        <h2 class="text-xl sm:text-2xl font-semibold text-neutral-900 mb-3">准备好开始了吗？</h2>
+        <p class="text-neutral-500 text-sm mb-6 max-w-lg mx-auto">立即注册，开启您的云服务之旅</p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="/regist.htm" class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
+            免费注册
+          </a>
+          <button class="px-6 py-2.5 bg-white text-neutral-700 text-sm font-medium border border-neutral-200 hover:border-neutral-300 transition-colors">
+            联系销售团队
+          </button>
+        </div>
+
+        <p class="mt-5 text-xs text-neutral-400">已有账号？<a href="/login.htm" class="text-neutral-600 hover:text-neutral-900 underline">立即登录</a></p>
+      </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer class="py-10 px-4 sm:px-6 lg:px-8 border-t border-neutral-200">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
+          
+          <!-- Logo 区域 -->
+          <div class="col-span-2 md:col-span-1">
+            <div class="mb-3">
+              <img src="https://cloud.furll.cn/upload/logo_160x50.png" alt="FurryCloud" class="h-7 w-auto">
+            </div>
+            <p class="text-xs text-neutral-500">企业上云解决方案服务平台</p>
+          </div>
+          
+          <!-- 服务中心 -->
+          <div>
+            <div class="text-xs font-semibold text-neutral-900 mb-3 uppercase tracking-wider">服务中心</div>
+            <ul class="space-y-2 text-xs text-neutral-500">
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">关于我们</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">合作伙伴</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">代理服务</a></li>
+            </ul>
+          </div>
+          
+          <!-- 支持服务 -->
+          <div>
+            <div class="text-xs font-semibold text-neutral-900 mb-3 uppercase tracking-wider">支持服务</div>
+            <ul class="space-y-2 text-xs text-neutral-500">
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">提交工单</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">工单列表</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">帮助中心</a></li>
+            </ul>
+          </div>
+          
+          <!-- 资源中心 -->
+          <div>
+            <div class="text-xs font-semibold text-neutral-900 mb-3 uppercase tracking-wider">资源中心</div>
+            <ul class="space-y-2 text-xs text-neutral-500">
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">产品中心</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">文档中心</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">新闻中心</a></li>
+            </ul>
+          </div>
+          
+          <!-- 法律信息 -->
+          <div>
+            <div class="text-xs font-semibold text-neutral-900 mb-3 uppercase tracking-wider">法律信息</div>
+            <ul class="space-y-2 text-xs text-neutral-500">
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">隐私政策</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">服务条款</a></li>
+              <li><a href="#" class="hover:text-neutral-900 transition-colors">联系我们</a></li>
+            </ul>
+          </div>
+          
+        </div>
+        
+        <div class="pt-6 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p class="text-xs text-neutral-400">2026 FurryCloud. All rights reserved.</p>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
+              津ICP备2025036475号-4
+            </a>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-neutral-400">访客 <span id="busuanzi_site_uv">Loading...</span> 人次</span>
+            <span class="text-xs text-neutral-400">|</span>
+            <span class="text-xs text-neutral-400">访问 <span id="busuanzi_site_pv">Loading...</span> 次</span>
+            <a href="https://www.busuanzi.cc/count.php?search=cloud.furll.cn" title="不蒜子统计" target="_blank">
+              <img style="width:85px;height:25px;" src="https://www.busuanzi.cc/static/images/bsz-tongji.png">
+            </a>
+            <a href="https://space.bilibili.com/1134874723" target="_blank" rel="noopener noreferrer" class="text-neutral-400 hover:text-neutral-600 transition-colors" title="哔哩哔哩">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg>
+            </a>
+            <a href="https://qm.qq.com/cgi-bin/qm/qr?k=9eDc6BRGgWBY-MVvMHNeqbbZ0Lm06TLK&jump_from=webapi&authKey=MHaSMvyIX2syGkEPKxtR3poK+0GhivmwDgieEWEiT5bBIRI+yLpRtoz2WzJvWQVA" target="_blank" rel="noopener noreferrer" class="text-neutral-400 hover:text-neutral-600 transition-colors" title="QQ群">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.003 2c-2.265 0-6.29 1.364-6.29 7.325v1.195S3.55 14.96 3.55 17.474c0 .665.17 1.025.281 1.025.114 0 .902-.484 1.748-2.072 0 0-.18 2.197 1.904 3.967 0 0-1.77.495-1.77 1.182 0 .686 4.078.43 6.29.43 2.21 0 6.287.257 6.287-.43 0-.687-1.768-1.182-1.768-1.182 2.085-1.77 1.905-3.967 1.905-3.967.845 1.588 1.634 2.072 1.746 2.072.111 0 .283-.36.283-1.025 0-2.514-2.166-6.954-2.166-6.954V9.325C18.29 3.364 14.268 2 12.003 2z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+  </main>
+
+  <!-- 页面加载动画控制脚本 -->
+  <script>
+    (function() {
+      var progressBar = document.getElementById('loader-progress-bar');
+      var percentageText = document.getElementById('loader-percentage');
+      var loader = document.getElementById('page-loader');
+      var body = document.body;
+      var currentProgress = 0;
+      var targetProgress = 0;
+      var animationId = null;
+      var isLoaded = false;
+
+      // 平滑更新进度
+      function animateProgress() {
+        var diff = targetProgress - currentProgress;
+        if (Math.abs(diff) < 0.5) {
+          currentProgress = targetProgress;
+        } else {
+          currentProgress += diff * 0.1; // 缓动系数
+        }
+
+        if (progressBar) {
+          progressBar.style.width = currentProgress + '%';
+        }
+        if (percentageText) {
+          percentageText.textContent = Math.round(currentProgress) + '%';
+        }
+
+        if (currentProgress < targetProgress || targetProgress < 100) {
+          animationId = requestAnimationFrame(animateProgress);
+        }
+      }
+
+      // 设置目标进度
+      function setTargetProgress(percent) {
+        targetProgress = Math.min(percent, 100);
+        if (!animationId) {
+          animateProgress();
+        }
+      }
+
+      // 隐藏加载动画
+      function hideLoader() {
+        isLoaded = true;
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+        currentProgress = 100;
+        targetProgress = 100;
+        if (progressBar) {
+          progressBar.style.width = '100%';
+        }
+        if (percentageText) {
+          percentageText.textContent = '100%';
+        }
+        setTimeout(function() {
+          if (loader) {
+            loader.classList.add('loaded');
+          }
+          if (body) {
+            body.classList.remove('loading');
+          }
+        }, 300);
+      }
+
+      // 显示加载超时提示
+      function showTimeoutMessage() {
+        var timeoutDiv = document.createElement('div');
+        timeoutDiv.id = 'loader-timeout';
+        timeoutDiv.innerHTML = '<p style="margin: 0 0 12px 0; color: #737373; font-size: 12px; line-height: 1.5;">加载时间过长<br>可能是网络原因</p><button id="loader-close-btn" style="padding: 6px 16px; background: #171717; color: #fff; border: none; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.2s;">关闭加载动画</button>';
+        timeoutDiv.style.cssText = 'position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10001;';
+        loader.appendChild(timeoutDiv);
+
+        // 按钮悬停效果
+        var closeBtn = document.getElementById('loader-close-btn');
+        closeBtn.addEventListener('mouseenter', function() {
+          this.style.background = '#333333';
+        });
+        closeBtn.addEventListener('mouseleave', function() {
+          this.style.background = '#171717';
+        });
+        closeBtn.addEventListener('click', function() {
+          hideLoader();
+        });
+      }
+
+      // 初始进度
+      setTargetProgress(5);
+
+      // DOMContentLoaded 时更新进度
+      document.addEventListener('DOMContentLoaded', function() {
+        setTargetProgress(30);
+
+        // 检查图片加载
+        var images = document.querySelectorAll('img');
+        var totalImages = images.length;
+        var loadedImages = 0;
+
+        function updateImageProgress() {
+          if (totalImages > 0) {
+            var imageProgress = (loadedImages / totalImages) * 50;
+            setTargetProgress(30 + imageProgress);
+          }
+        }
+
+        images.forEach(function(img) {
+          if (img.complete) {
+            loadedImages++;
+            updateImageProgress();
+          } else {
+            img.addEventListener('load', function() {
+              loadedImages++;
+              updateImageProgress();
+            });
+            img.addEventListener('error', function() {
+              loadedImages++;
+              updateImageProgress();
+            });
+          }
+        });
+      });
+
+      // 资源加载进度监控
+      if (window.performance && window.performance.getEntriesByType) {
+        var checkResources = setInterval(function() {
+          if (isLoaded) {
+            clearInterval(checkResources);
+            return;
+          }
+
+          var entries = window.performance.getEntriesByType('resource');
+          if (entries.length > 0) {
+            var loadedCount = 0;
+            entries.forEach(function(entry) {
+              if (entry.responseEnd > 0) {
+                loadedCount++;
+              }
+            });
+            var resourceProgress = (loadedCount / entries.length) * 20;
+            setTargetProgress(Math.max(targetProgress, 5 + resourceProgress));
+          }
+        }, 200);
+
+        window.addEventListener('load', function() {
+          clearInterval(checkResources);
+        });
+      }
+
+      // 页面加载完成后隐藏加载动画
+      window.addEventListener('load', function() {
+        setTargetProgress(100);
+        setTimeout(function() {
+          hideLoader();
+        }, 500);
+      });
+
+      // 超过5秒显示超时提示
+      setTimeout(function() {
+        if (!isLoaded && loader && !loader.classList.contains('loaded')) {
+          showTimeoutMessage();
+        }
+      }, 5000);
+    })();
+
+    // 公告弹窗逻辑
+    function closeAnnouncement() {
+      var modal = document.getElementById('announcement-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        localStorage.setItem('announcement_closed', 'true');
+      }
+    }
+
+    // 页面加载完成后显示公告弹窗
+    window.addEventListener('load', function() {
+      var modal = document.getElementById('announcement-modal');
+      if (!modal) return;
+      
+      var isClosed = localStorage.getItem('announcement_closed');
+      if (!isClosed) {
+        setTimeout(function() {
+          modal.classList.remove('hidden');
+        }, 800);
+      }
+    });
+  </script>
+
+</body>
+</html>
