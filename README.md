@@ -225,7 +225,7 @@ python app.py
 
 ### 配置文件格式
 ```yaml
-site_url: "https://mofang.furll.cn"
+site_url: "https://xxx.furll.cn"
 admin_path: "/zduzslsr/"
 username: "your_username"
 password: "your_password"
