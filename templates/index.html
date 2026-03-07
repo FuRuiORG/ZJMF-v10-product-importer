@@ -6,15 +6,30 @@
     <title>ZJMF v10 产品导入工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        :root {
+            --color-bg: #ffffff;
+            --color-bg-secondary: #fafafa;
+            --color-bg-tertiary: #f5f5f5;
+            --color-border: #e5e5e5;
+            --color-border-hover: #d4d4d4;
+            --color-border-focus: #a3a3a3;
+            --color-text-primary: #171717;
+            --color-text-secondary: #525252;
+            --color-text-tertiary: #737373;
+            --color-text-muted: #a3a3a3;
+            --color-accent: #171717;
+            --color-accent-hover: #262626;
+            --color-selected-border: #525252;
+            --color-selected-bg: #f5f5f5;
+        }
 
-        /* 页面加载动画 */
         #page-loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #ffffff;
+            background: var(--color-bg);
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -30,7 +45,7 @@
         }
 
         body.loading {
-            overflow-y: scroll;
+            overflow: hidden;
             position: fixed;
             width: 100%;
             height: 100%;
@@ -38,120 +53,95 @@
 
         .loader-container {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 80px;
+            height: 80px;
         }
 
-        .loader-ring {
+        .loader-square {
             position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--color-text-primary);
+            animation: loader-square 1.2s ease-in-out infinite;
+        }
+
+        .loader-square:nth-child(1) {
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            border: 2px solid transparent;
-            border-top-color: #171717;
-            border-right-color: #171717;
-            border-radius: 50%;
-            animation: loader-rotate 1.5s linear infinite;
+            animation-delay: 0s;
         }
 
-        .loader-ring:nth-child(2) {
-            width: 80%;
-            height: 80%;
-            top: 10%;
-            left: 10%;
-            border-top-color: #525252;
-            border-right-color: transparent;
-            border-bottom-color: #525252;
-            animation: loader-rotate 1.2s linear infinite reverse;
+        .loader-square:nth-child(2) {
+            top: 0;
+            left: 30px;
+            animation-delay: 0.1s;
         }
 
-        .loader-ring:nth-child(3) {
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-            border-top-color: transparent;
-            border-right-color: #a3a3a3;
-            border-bottom-color: transparent;
-            border-left-color: #a3a3a3;
-            animation: loader-rotate 0.8s linear infinite;
+        .loader-square:nth-child(3) {
+            top: 0;
+            left: 60px;
+            animation-delay: 0.2s;
         }
 
-        @keyframes loader-rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loader-square:nth-child(4) {
+            top: 30px;
+            left: 0;
+            animation-delay: 0.1s;
         }
 
-        .loader-pulse {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 12px;
-            height: 12px;
-            background: #171717;
-            border-radius: 50%;
-            animation: loader-pulse 1.5s ease-in-out infinite;
+        .loader-square:nth-child(5) {
+            top: 30px;
+            left: 30px;
+            animation-delay: 0.2s;
         }
 
-        @keyframes loader-pulse {
+        .loader-square:nth-child(6) {
+            top: 30px;
+            left: 60px;
+            animation-delay: 0.3s;
+        }
+
+        .loader-square:nth-child(7) {
+            top: 60px;
+            left: 0;
+            animation-delay: 0.2s;
+        }
+
+        .loader-square:nth-child(8) {
+            top: 60px;
+            left: 30px;
+            animation-delay: 0.3s;
+        }
+
+        .loader-square:nth-child(9) {
+            top: 60px;
+            left: 60px;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loader-square {
             0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: scale(1);
                 opacity: 1;
             }
             50% {
-                transform: translate(-50%, -50%) scale(0.6);
-                opacity: 0.5;
+                transform: scale(0.5);
+                opacity: 0.3;
             }
         }
 
         .loader-text {
             margin-top: 32px;
-            font-size: 13px;
-            color: #737373;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            animation: loader-text-pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loader-text-pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
-        }
-
-        .loader-progress {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 1px;
-            background: #e5e5e5;
-            overflow: hidden;
-        }
-
-        .loader-progress-bar {
-            height: 100%;
-            background: #171717;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        .loader-percentage {
-            position: absolute;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
             font-size: 11px;
-            color: #737373;
-            letter-spacing: 0.1em;
+            color: var(--color-text-tertiary);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
         }
 
-        /* 按钮加载状态 */
         .btn-loading {
             position: relative;
             pointer-events: none;
+            color: transparent !important;
         }
 
         .btn-loading::after {
@@ -163,10 +153,15 @@
             left: 50%;
             margin-left: -8px;
             margin-top: -8px;
-            border: 2px solid transparent;
-            border-top-color: currentColor;
+            border: 2px solid #ffffff;
+            border-top-color: transparent;
             border-radius: 50%;
             animation: btn-spin 0.8s linear infinite;
+        }
+
+        .btn-secondary.btn-loading::after {
+            border-color: var(--color-text-tertiary);
+            border-top-color: transparent;
         }
 
         @keyframes btn-spin {
@@ -174,11 +169,33 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 淡入动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-border);
+            border-top-color: var(--color-text-primary);
+            border-radius: 50%;
+            animation: btn-spin 0.8s linear infinite;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -187,7 +204,7 @@
         }
 
         .animate-fade-in-up {
-            animation: fadeInUp 0.7s ease-out forwards;
+            animation: fadeInUp 0.5s ease-out forwards;
         }
 
         .delay-100 { animation-delay: 0.1s; }
@@ -195,65 +212,235 @@
         .delay-300 { animation-delay: 0.3s; }
         .delay-400 { animation-delay: 0.4s; }
 
-        /* 卡片样式 */
-        .feature-card {
-            transition: all 0.2s ease;
+        .card {
+            transition: all 0.15s ease;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+        }
+
+        .card:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        .card-selected {
+            border-color: var(--color-selected-border) !important;
+            background: var(--color-selected-bg) !important;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--color-border-focus);
+        }
+
+        .input-field::placeholder {
+            color: var(--color-text-muted);
+        }
+
+        .select-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .select-field:focus {
+            border-color: var(--color-border-focus);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
             border: 1px solid transparent;
         }
 
-        .feature-card:hover {
-            border-color: #e5e7eb;
-            background-color: #fafafa;
+        .btn-primary {
+            background: var(--color-accent);
+            color: #ffffff;
+            border-color: var(--color-accent);
         }
 
-        .selected-card {
-            border-color: #10b981 !important;
-            background-color: #d1fae5 !important;
-            box-shadow: 0 0 0 2px #10b981;
+        .btn-primary:hover {
+            background: var(--color-accent-hover);
+            border-color: var(--color-accent-hover);
         }
 
-        /* 自定义滚动条 */
+        .btn-secondary {
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            border-color: var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-border-hover);
+            background: var(--color-bg-secondary);
+        }
+
+        .checkbox-field {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-text-primary);
+            cursor: pointer;
+        }
+
+        .message-box {
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid var(--color-border);
+        }
+
+        .message-box.success {
+            background: var(--color-bg-secondary);
+            border-color: var(--color-border);
+            color: var(--color-text-secondary);
+        }
+
+        .message-box.error {
+            background: var(--color-bg-secondary);
+            border-color: var(--color-border);
+            color: var(--color-text-primary);
+        }
+
+        .message-box.info {
+            background: var(--color-bg-secondary);
+            border-color: var(--color-border);
+            color: var(--color-text-secondary);
+        }
+
+        .tip-box {
+            padding: 12px 16px;
+            font-size: 13px;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+        }
+
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f5f5f5;
+            background: var(--color-bg-tertiary);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #d4d4d4;
+            background: var(--color-border-hover);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #a3a3a3;
+            background: var(--color-text-muted);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+        }
+
+        .label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .label-hint {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            margin-top: 6px;
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 2px;
+            background: var(--color-bg-tertiary);
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--color-text-primary);
+            transition: width 0.3s ease;
+        }
+
+        .floating-bar {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            padding: 16px;
+            z-index: 50;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
 <body class="bg-white min-h-screen loading">
 
-    <!-- 页面加载动画 -->
     <div id="page-loader">
         <div class="loader-container">
-            <div class="loader-ring"></div>
-            <div class="loader-ring"></div>
-            <div class="loader-ring"></div>
-            <div class="loader-pulse"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
         </div>
         <div class="loader-text">Loading</div>
-        <div class="loader-percentage" id="loader-percentage">0%</div>
-        <div class="loader-progress">
-            <div class="loader-progress-bar" id="loader-progress-bar"></div>
-        </div>
     </div>
 
-    <!-- 导航栏 -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-14">
                 <div class="flex items-center gap-4">
-                    <span class="text-lg font-semibold text-neutral-900">ZJMF v10</span>
+                    <span class="text-base font-semibold text-neutral-900">ZJMF v10</span>
+                    <span class="text-sm text-neutral-400">|</span>
                     <span class="text-sm text-neutral-500">上游产品批量导入工具</span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -263,139 +450,409 @@
         </div>
     </nav>
 
-    <!-- 主内容区 -->
     <main class="relative z-10 pt-14">
         
-        <!-- 配置区域 -->
         <section class="py-12 px-4 sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto">
                 <div class="mb-8 animate-fade-in-up opacity-0">
-                    <h2 class="text-xl font-semibold text-neutral-900">系统配置</h2>
-                    <p class="mt-2 text-sm text-neutral-500">配置您的 ZJMF v10 系统连接信息</p>
+                    <h2 class="section-title">系统配置</h2>
+                    <p class="section-desc">配置您的 ZJMF v10 系统连接信息</p>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-4 animate-fade-in-up opacity-0 delay-100">
-                    <div class="feature-card bg-white p-5 border border-neutral-200">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">站点 URL</label>
-                        <input type="text" id="site_url" placeholder="https://mofang.furll.cn" class="w-full px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
+                    <div class="card p-5">
+                        <label class="label">站点 URL</label>
+                        <input type="text" id="site_url" placeholder="https://mofang.furll.cn" class="input-field">
                     </div>
 
-                    <div class="feature-card bg-white p-5 border border-neutral-200">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">后台路径</label>
-                        <input type="text" id="admin_path" placeholder="/zduzslsr/" class="w-full px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
+                    <div class="card p-5">
+                        <label class="label">后台路径</label>
+                        <input type="text" id="admin_path" placeholder="/zduzslsr/" class="input-field">
                     </div>
 
-                    <div class="feature-card bg-white p-5 border border-neutral-200">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">用户名</label>
-                        <input type="text" id="username" placeholder="请输入用户名" class="w-full px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
+                    <div class="card p-5">
+                        <label class="label">用户名</label>
+                        <input type="text" id="username" placeholder="请输入用户名" class="input-field">
                     </div>
 
-                    <div class="feature-card bg-white p-5 border border-neutral-200">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">密码</label>
-                        <input type="password" id="password" placeholder="请输入密码" class="w-full px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
+                    <div class="card p-5">
+                        <label class="label">密码</label>
+                        <input type="password" id="password" placeholder="请输入密码" class="input-field">
                     </div>
                 </div>
 
                 <div class="mt-6 flex gap-3 animate-fade-in-up opacity-0 delay-200">
-                    <button id="save_config_btn" class="px-5 py-2.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
-                        保存配置
-                    </button>
-                    <button id="login_btn" class="px-5 py-2.5 bg-white text-neutral-700 text-sm font-medium border border-neutral-200 hover:border-neutral-300 transition-colors">
-                        登录
-                    </button>
+                    <button id="save_config_btn" class="btn btn-primary">保存配置</button>
+                    <button id="login_btn" class="btn btn-secondary">登录</button>
                 </div>
 
-                <div id="config_message" class="mt-4 p-3 rounded text-sm" style="display: none;"></div>
+                <div id="config_message" class="message-box mt-4" style="display: none;"></div>
             </div>
         </section>
 
-        <!-- 分组选择区域 -->
-        <section id="groups_section" class="py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50/50" style="display: none;">
-            <div class="max-w-4xl mx-auto">
-                <div class="mb-8 animate-fade-in-up">
-                    <h2 class="text-xl font-semibold text-neutral-900">选择目标分组</h2>
-                    <p class="mt-2 text-sm text-neutral-500">选择产品要导入到的分组</p>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-4 animate-fade-in-up delay-100">
-                    <div class="feature-card bg-white p-5 border border-neutral-200">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">一级分组</label>
-                        <select id="first_level_select" class="w-full px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
-                            <option value="">请选择一级分组</option>
-                        </select>
-                    </div>
-
-                    <div class="feature-card bg-white p-5 border border-neutral-200">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">二级分组</label>
-                        <select id="second_level_select" class="w-full px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
-                            <option value="">请选择二级分组</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mt-6 animate-fade-in-up delay-200">
-                    <button id="load_suppliers_btn" class="px-5 py-2.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
-                        加载供应商
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 供应商选择区域 -->
         <section id="suppliers_section" class="py-12 px-4 sm:px-6 lg:px-8" style="display: none;">
             <div class="max-w-4xl mx-auto">
                 <div class="mb-8 animate-fade-in-up">
-                    <h2 class="text-xl font-semibold text-neutral-900">选择上游供应商</h2>
-                    <p class="mt-2 text-sm text-neutral-500">选择要导入哪个供应商的产品</p>
+                    <h2 class="section-title">选择导入方式</h2>
+                    <p class="section-desc">选择全自动导入或从供应商导入</p>
                 </div>
 
-                <div id="suppliers_list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in-up delay-100"></div>
+                <div class="grid md:grid-cols-2 gap-4 animate-fade-in-up delay-100 mb-6">
+                    <div class="card p-5 cursor-pointer" id="auto_import_card">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="icon-box">
+                                <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-sm font-semibold text-neutral-900">全自动导入</h4>
+                        </div>
+                        <p class="text-xs text-neutral-500 mb-3">直接从上游接口导入产品，自动创建分组</p>
+                        <div class="tip-box">
+                            提示：部分产品可能因被隐藏等原因不显示
+                        </div>
+                    </div>
 
-                <div class="mt-6 animate-fade-in-up delay-200">
-                    <button id="load_products_btn" class="px-5 py-2.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
-                        加载产品
-                    </button>
+                    <div class="card p-5 cursor-pointer" id="supplier_import_card">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="icon-box">
+                                <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-sm font-semibold text-neutral-900">供应商导入</h4>
+                        </div>
+                        <p class="text-xs text-neutral-500 mb-3">从已添加的供应商导入产品</p>
+                        <p class="text-xs text-neutral-400">点击后显示供应商列表</p>
+                    </div>
+                </div>
+
+                <div id="auto_import_section" class="hidden animate-fade-in-up delay-100">
+                    <div id="upstream_suppliers_section" class="hidden">
+                        <h3 class="text-base font-semibold text-neutral-900 mb-4">选择上游供应商</h3>
+                        <div id="upstream_suppliers_list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
+
+                    <div id="upstream_loading_indicator" class="hidden py-8 flex flex-col items-center justify-center">
+                        <div class="loading-spinner mb-3"></div>
+                        <span class="text-sm text-neutral-500">加载中...</span>
+                    </div>
+
+                    <div id="upstream_groups_section" class="hidden mt-6">
+                        <div class="tip-box mb-4">
+                            <strong class="text-neutral-700">使用说明：</strong>
+                            <ul class="mt-2 ml-4 list-disc space-y-1">
+                                <li>可以选择直接根据上游的对应产品的一级分组创建一级分组然后创建二级然后导入</li>
+                                <li>可以单选择二级分组，然后选择已有的一级分组导入</li>
+                                <li>也可以直接选择一级分组，然后自动创建一级分组和二级分组再导入</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="label">或选择已有的一级分组（可选）</label>
+                            <select id="upstream_first_level_select" class="select-field">
+                                <option value="0">不选择（将自动创建一级分组）</option>
+                            </select>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-sm font-semibold text-neutral-900 mb-3">一级分组</h4>
+                                <div id="upstream_first_groups_list" class="space-y-2 max-h-64 overflow-y-auto p-3 border border-neutral-200 bg-white"></div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-neutral-900 mb-3">二级分组</h4>
+                                <div id="upstream_second_groups_list" class="space-y-2 max-h-64 overflow-y-auto p-3 border border-neutral-200 bg-white"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-4">
+                            <h4 class="text-sm font-semibold text-neutral-900">导入配置</h4>
+                            
+                            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="card p-4">
+                                    <label class="label">定价模式</label>
+                                    <select id="upstream_price_basis" class="select-field min-w-[160px]">
+                                        <option value="standard">上游原价</option>
+                                        <option value="agent">成本价</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="label">利润方式</label>
+                                    <select id="upstream_profit_type" class="select-field min-w-[160px]">
+                                        <option value="0">百分比</option>
+                                        <option value="1">固定金额</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="label">利润值</label>
+                                    <input type="number" id="upstream_profit_percent" value="0" min="0" step="0.01" class="input-field">
+                                    <p class="text-xs text-neutral-400 mt-1">百分比或固定金额</p>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="label">代理模式</label>
+                                    <select id="upstream_mode" class="select-field min-w-[160px]">
+                                        <option value="only_api">仅调用接口（推荐）</option>
+                                        <option value="sync">同步商品</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="card p-4">
+                                    <label class="label">续费利润方式</label>
+                                    <select id="upstream_renew_profit_type" class="select-field min-w-[160px]">
+                                        <option value="0">百分比</option>
+                                        <option value="1">固定金额</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="label">续费利润值</label>
+                                    <input type="number" id="upstream_renew_profit_percent" value="0" min="0" step="0.01" class="input-field">
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="label">升降级利润方式</label>
+                                    <select id="upstream_upgrade_profit_type" class="select-field min-w-[160px]">
+                                        <option value="0">百分比</option>
+                                        <option value="1">固定金额</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="label">升降级利润值</label>
+                                    <input type="number" id="upstream_upgrade_profit_percent" value="0" min="0" step="0.01" class="input-field">
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="card p-4">
+                                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                                        <input type="checkbox" id="upstream_auto_setup_checkbox" class="checkbox-field" checked>
+                                        <div>
+                                            <span class="text-sm text-neutral-700 font-medium">自动开通</span>
+                                            <p class="text-xs text-neutral-400">订单支付后自动开通服务</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                                        <input type="checkbox" id="upstream_certification_checkbox" class="checkbox-field" checked>
+                                        <div>
+                                            <span class="text-sm text-neutral-700 font-medium">实名认证</span>
+                                            <p class="text-xs text-neutral-400">购买时需要实名认证</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="flex items-center gap-3 cursor-not-allowed select-none opacity-50">
+                                        <input type="checkbox" id="upstream_sync_checkbox" class="checkbox-field" disabled>
+                                        <div>
+                                            <span class="text-sm text-neutral-700 font-medium">代理升降级</span>
+                                            <p class="text-xs text-neutral-400">是否代理升降级商品（暂不支持开启该功能）</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="card p-4">
+                                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                                        <input type="checkbox" id="upstream_convert_html_checkbox" class="checkbox-field" checked>
+                                        <div>
+                                            <span class="text-sm text-neutral-700 font-medium">转换 HTML 标签</span>
+                                            <p class="text-xs text-neutral-400">将 &lt;li&gt;xxx&lt;/li&gt; 转换为 xxx&lt;br/&gt;</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div class="card p-4">
+                                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                                        <input type="checkbox" id="upstream_auto_convert_newlines_checkbox" class="checkbox-field" checked>
+                                        <div>
+                                            <span class="text-sm text-neutral-700 font-medium">自动转换换行符</span>
+                                            <p class="text-xs text-neutral-400">将换行符自动转换为&lt;br/&gt;</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4">
+                                <button id="import_upstream_btn" class="btn btn-primary">开始导入</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="upstream_message" class="message-box mt-4" style="display: none;"></div>
+                </div>
+
+                <div id="suppliers_list_section" class="hidden animate-fade-in-up delay-100">
+                    <div id="supplier_target_group_section" class="mb-6">
+                        <h3 class="text-base font-semibold text-neutral-900 mb-4">选择目标分组</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="card p-5">
+                                <label class="label">一级分组</label>
+                                <select id="first_level_select" class="select-field">
+                                    <option value="">请选择一级分组</option>
+                                </select>
+                            </div>
+
+                            <div class="card p-5">
+                                <label class="label">二级分组</label>
+                                <select id="second_level_select" class="select-field">
+                                    <option value="">请选择二级分组</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-base font-semibold text-neutral-900 mb-4">选择供应商</h3>
+                    <div id="suppliers_list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+                    <div class="mt-6 animate-fade-in-up delay-200">
+                        <button id="load_products_btn" class="btn btn-primary">加载产品</button>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 产品选择区域 -->
         <section id="products_section" class="py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50/50" style="display: none;">
             <div class="max-w-6xl mx-auto">
                 <div class="mb-8 animate-fade-in-up">
-                    <h2 class="text-xl font-semibold text-neutral-900">选择要导入的产品</h2>
-                    <p class="mt-2 text-sm text-neutral-500">选择要导入的产品并设置定价模式</p>
+                    <h2 class="section-title">选择要导入的产品</h2>
+                    <p class="section-desc">选择要导入的产品并设置定价模式</p>
+                    <p class="text-xs text-neutral-500 mt-2">提示：支持重复导入，可在导入后修改目标分组再次导入，无需重新加载产品列表</p>
                 </div>
 
-                <div class="mb-6 animate-fade-in-up delay-100">
-                    <div class="feature-card bg-white p-5 border border-neutral-200 inline-block">
-                        <label class="block text-sm font-medium text-neutral-700 mb-2">定价模式</label>
-                        <select id="price_basis" class="px-3 py-2 border border-neutral-200 rounded text-sm focus:outline-none focus:border-neutral-400">
-                            <option value="standard">上游原价（standard）</option>
-                            <option value="agent">成本价（agent）</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-6 flex flex-wrap items-center gap-4 animate-fade-in-up delay-100">
-                    <div class="feature-card bg-white p-4 border border-neutral-200">
-                        <label class="flex items-center gap-2 cursor-pointer select-none">
-                            <input type="checkbox" id="convert_html_checkbox" class="w-4 h-4" checked>
-                            <span class="text-sm text-neutral-700 font-medium">转换 HTML 标签</span>
-                        </label>
-                        <p class="text-xs text-neutral-500 mt-1.5">将 &lt;li&gt;xxx&lt;/li&gt; 转换为 xxx&lt;br/&gt;</p>
+                <div class="mb-6 space-y-4 animate-fade-in-up delay-100">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card p-4">
+                            <label class="label">定价模式</label>
+                            <select id="price_basis" class="select-field min-w-[160px]">
+                                <option value="standard">上游原价</option>
+                                <option value="agent">成本价</option>
+                            </select>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">利润方式</label>
+                            <select id="profit_type" class="select-field min-w-[160px]">
+                                <option value="0">百分比</option>
+                                <option value="1">固定金额</option>
+                            </select>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">利润值</label>
+                            <input type="number" id="profit_percent" value="0" min="0" step="0.01" class="input-field">
+                            <p class="text-xs text-neutral-400 mt-1">百分比或固定金额</p>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">代理模式</label>
+                            <select id="mode" class="select-field min-w-[160px]">
+                                <option value="only_api">仅调用接口（推荐）</option>
+                                <option value="sync">同步商品</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <div class="flex items-center gap-3 ml-auto">
-                        <button id="select_all_btn" class="px-4 py-2 bg-white text-neutral-700 text-sm font-medium border border-neutral-200 hover:border-neutral-300 transition-colors">
-                            全选
-                        </button>
-                        <button id="deselect_all_btn" class="px-4 py-2 bg-white text-neutral-700 text-sm font-medium border border-neutral-200 hover:border-neutral-300 transition-colors">
-                            取消全选
-                        </button>
-                        <button id="import_selected_btn" class="px-5 py-2.5 bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
-                            导入选中产品
-                        </button>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card p-4">
+                            <label class="label">续费利润方式</label>
+                            <select id="renew_profit_type" class="select-field min-w-[160px]">
+                                <option value="0">百分比</option>
+                                <option value="1">固定金额</option>
+                            </select>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">续费利润值</label>
+                            <input type="number" id="renew_profit_percent" value="0" min="0" step="0.01" class="input-field">
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">升降级利润方式</label>
+                            <select id="upgrade_profit_type" class="select-field min-w-[160px]">
+                                <option value="0">百分比</option>
+                                <option value="1">固定金额</option>
+                            </select>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">升降级利润值</label>
+                            <input type="number" id="upgrade_profit_percent" value="0" min="0" step="0.01" class="input-field">
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="card p-4">
+                            <label class="flex items-center gap-3 cursor-pointer select-none">
+                                <input type="checkbox" id="auto_setup_checkbox" class="checkbox-field" checked>
+                                <div>
+                                    <span class="text-sm text-neutral-700 font-medium">自动开通</span>
+                                    <p class="text-xs text-neutral-400">订单支付后自动开通服务</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="flex items-center gap-3 cursor-pointer select-none">
+                                <input type="checkbox" id="certification_checkbox" class="checkbox-field" checked>
+                                <div>
+                                    <span class="text-sm text-neutral-700 font-medium">实名认证</span>
+                                    <p class="text-xs text-neutral-400">购买时需要实名认证</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="flex items-center gap-3 cursor-not-allowed select-none opacity-50">
+                                <input type="checkbox" id="sync_checkbox" class="checkbox-field" disabled>
+                                <div>
+                                    <span class="text-sm text-neutral-700 font-medium">代理升降级</span>
+                                    <p class="text-xs text-neutral-400">是否代理升降级商品（暂不支持开启该功能）</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="card p-4">
+                            <label class="flex items-center gap-3 cursor-pointer select-none">
+                                <input type="checkbox" id="convert_html_checkbox" class="checkbox-field" checked>
+                                <div>
+                                    <span class="text-sm text-neutral-700 font-medium">转换 HTML 标签</span>
+                                    <p class="text-xs text-neutral-400">将 &lt;li&gt;xxx&lt;/li&gt; 转换为 xxx&lt;br/&gt;</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="flex items-center gap-3 cursor-pointer select-none">
+                                <input type="checkbox" id="auto_convert_newlines_checkbox" class="checkbox-field" checked>
+                                <div>
+                                    <span class="text-sm text-neutral-700 font-medium">自动转换换行符</span>
+                                    <p class="text-xs text-neutral-400">将换行符自动转换为&lt;br/&gt;</p>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="card p-4">
+                            <label class="label">搜索产品</label>
+                            <input type="text" id="product_search" placeholder="输入产品名称搜索..." class="input-field">
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button id="select_all_btn" class="btn btn-secondary">全选</button>
+                        <button id="deselect_all_btn" class="btn btn-secondary">取消全选</button>
                     </div>
                 </div>
 
@@ -403,30 +860,29 @@
             </div>
         </section>
 
-        <!-- 导入进度区域 -->
         <section id="progress_section" class="py-12 px-4 sm:px-6 lg:px-8" style="display: none;">
             <div class="max-w-4xl mx-auto">
                 <div class="mb-8 animate-fade-in-up">
-                    <h2 class="text-xl font-semibold text-neutral-900">导入进度</h2>
-                    <p class="mt-2 text-sm text-neutral-500">实时查看产品导入进度</p>
+                    <h2 class="section-title">导入进度</h2>
+                    <p class="section-desc">实时查看产品导入进度</p>
                 </div>
 
-                <div class="feature-card bg-white p-6 border border-neutral-200 animate-fade-in-up delay-100">
+                <div class="card p-6 animate-fade-in-up delay-100">
                     <div class="flex justify-between items-center mb-4">
                         <span class="text-sm text-neutral-600">
                             进度：<span id="progress_current" class="font-semibold text-neutral-900">0</span> / 
                             <span id="progress_total" class="font-semibold text-neutral-900">0</span>
                         </span>
-                        <span class="text-sm text-green-600">
-                            成功：<span id="progress_success" class="font-semibold">0</span>
+                        <span class="text-sm text-neutral-600">
+                            成功：<span id="progress_success" class="font-semibold text-neutral-900">0</span>
                         </span>
-                        <span class="text-sm text-red-600">
-                            失败：<span id="progress_failed" class="font-semibold">0</span>
+                        <span class="text-sm text-neutral-600">
+                            失败：<span id="progress_failed" class="font-semibold text-neutral-900">0</span>
                         </span>
                     </div>
 
-                    <div class="w-full h-2 bg-neutral-100 rounded-full overflow-hidden mb-6">
-                        <div id="progress_fill" class="h-full bg-neutral-900 transition-all duration-300" style="width: 0%"></div>
+                    <div class="progress-bar mb-6">
+                        <div id="progress_fill" class="progress-bar-fill" style="width: 0%"></div>
                     </div>
 
                     <div id="import_results" class="space-y-2 max-h-64 overflow-y-auto"></div>
@@ -435,6 +891,18 @@
         </section>
 
     </main>
+
+    <div id="floating_action_bar" class="floating-bar" style="display: none;">
+        <div class="flex items-center gap-4">
+            <div>
+                <label class="text-xs font-medium text-neutral-600 mb-1 block">目标分组</label>
+                <select id="floating_product_group_select" class="select-field min-w-[200px]">
+                    <option value="">选择分组...</option>
+                </select>
+            </div>
+            <button id="import_selected_btn" class="btn btn-primary">导入选中产品</button>
+        </div>
+    </div>
 
     <script src="/static/js/main.js"></script>
 </body>

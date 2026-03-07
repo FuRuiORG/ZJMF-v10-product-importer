@@ -172,3 +172,36 @@ class APIClient:
             'failed_count': failed_count,
             'results': results
         }
+    
+    def get_upstream_products(self, upstream_url: str) -> tuple[bool, str, Dict]:
+        """获取上游产品接口数据"""
+        try:
+            response = self.session.get(upstream_url, timeout=30)
+            result = response.json()
+            
+            if result.get('status') == 200:
+                return True, "获取成功", result.get('data', {})
+            else:
+                return False, result.get('msg', '获取失败'), {}
+        except Exception as e:
+            return False, f"请求失败：{str(e)}", {}
+    
+    def create_product_group(self, name: str, parent_id: int = 0) -> tuple[bool, str, int]:
+        """创建产品分组"""
+        url = f"{self.api_base}/v1/product/group"
+        data = {
+            "name": name,
+            "id": parent_id
+        }
+        
+        try:
+            response = self.session.post(url, json=data, headers=self._get_headers())
+            result = response.json()
+            
+            if result.get('status') == 200:
+                group_id = result.get('data', {}).get('id', 0)
+                return True, "创建成功", int(group_id)
+            else:
+                return False, result.get('msg', '创建失败'), 0
+        except Exception as e:
+            return False, f"请求失败：{str(e)}", 0
