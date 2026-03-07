@@ -255,8 +255,7 @@ password: "your_password"
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=FuRuiORG/ZJMF-Product-Importer&type=Date)](https://star-history.com/#FuRuiORG/ZJMF-Product-Importer&Date)
-
+[![Star History Chart](https://api.star-history.com/image?repos=FuRuiORG/ZJMF-v10-product-importer&type=date&legend=top-left)](https://www.star-history.com/?repos=FuRuiORG%2FZJMF-v10-product-importer&type=date&legend=bottom-right)
 ---
 
 **免责声明**: 本项目为第三方开发工具，与智简魔方官方无关。使用本工具造成的任何数据丢失或系统问题，由使用者自行承担。建议在生产环境使用前先备份数据。
