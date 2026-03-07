@@ -1,4 +1,4 @@
-# ZJMF v10 上游产品批量导入工具（Web 版）
+# ZJMF v10 上游产品批量导入工具
 
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-green.svg)](LICENSE)
