@@ -1,5 +1,9 @@
 # ZJMF v10 上游产品批量导入工具
 
+> [!NOTE]
+>本项目采用 Vibe Coding 方式开发，即通过自然语言提示驱动 AI 生成与迭代代码。
+>请酌情使用
+
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-green.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/FuRuiORG/ZJMF-Product-Importer)
